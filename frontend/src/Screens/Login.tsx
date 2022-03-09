@@ -1,40 +1,70 @@
 import NavBar from "../Components/NavBar"
-import { Link } from "react-router-dom"
+import { Link, useNavigate,} from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
-import { Authenticator, withAuthenticator } from '@aws-amplify/ui-react';
 
+import {useSignOut} from "../awscognito"
+import { useEffect }from "react"
+import { Auth } from "aws-amplify"
+import { withAuthenticator } from "@aws-amplify/ui-react"
 function Login()
 {
     const myState = useSelector((state : any) => state.changeTheUser);
     const isLogged =useSelector((state : any)=> state.logStatus)
+    const navigate = useNavigate();
     const dispatch =useDispatch();
+    useEffect(()=>{
+    
+        try{ //setting user
+          const user =Auth.currentAuthenticatedUser();
+          user.then(user => user.username)
+         .then((name)=>dispatch({type:"SETUSER",payload:name}))
+         .then(()=>{
+             if(isLogged==0)
+             {dispatch({type:"LOG"})}
+             else
+             {throw console.error();
+             
+             }
+            })
+         .then(()=>{
+
+            if(isLogged==0)
+            { navigate("/main",{replace:true})}
+
+            }
+            )
+    
+    
+        }
+        catch(error)
+        {
+            console.log("err1")
+        }
+        },[])
+    
+
     return(
-        // <Authenticator>
-        // {({signOut,user}) => (
         <div>
-        <NavBar />
+        {/* <NavBar />
         <div className="login">
         
-        <input  type="text" placeholder={myState} onChange={(e) => dispatch({type:"SETUSER",payload:e.target.value})} />
         
         <button onClick={() => dispatch({type:"LOG"})}  >set LOGIN </button>
         <button onClick={() => dispatch({type:"LOGOUT"})}  >set LOGOUT</button>
-        {/* <button onClick={signOut}  >awslogout</button> */}
-        {/* <button onClick={() =>console.log(user.attributes)}  >asd</button> */}
+        <button onClick={useSignOut}  >AWS logout</button> 
 
         
         
 
         
-        <Link  to="/main">Login</Link>
+        <Link  to="/main">ACCESS BLOGS</Link>
         
         
-        <p>User-name state: {myState}</p>
+        <p>{`you are logged in as: ${myState} `}</p>
         <p>Login state:{isLogged }</p>
+        </div> */}
+        PROCESSING
         </div>
-        </div>
-        // )}
-        // </Authenticator>
     )
 }
 
